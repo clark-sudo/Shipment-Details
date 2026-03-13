@@ -1,54 +1,69 @@
-﻿namespace Shipment
+﻿using System;
+using shipmentBase;
+using shipmentData;
+
+namespace shipmentDetails
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            string store = "E-commerce Store";
-            string product = "Apple";
-            long price = (long)Convert.ToInt64(99999999);
-            int quantity = (int)Convert.ToInt64(9);
-            string month = "March";
-            int day = (int)Convert.ToInt16(30);
-            int pro = (int)Convert.ToInt64(price * quantity);
-            int fee = (int)Convert.ToInt16(30);
-            int total = (int)Convert.ToInt64(pro + fee);
-            int method = (int)Convert.ToInt16(1);
             Console.WriteLine("Order confirmation");
-            Console.Write("Enter your Name: ");
-            string buyer = Console.ReadLine();
-            Console.Write("Enter your Contact +63 ");
-            int number = (int)Convert.ToInt64(Console.ReadLine());
-            Console.Write("Enter your Address: ");
-            string address = Console.ReadLine();
-            Console.WriteLine("--------------------------------------");
-            Console.WriteLine(store);
-            Console.WriteLine("Product for example : " + product);
-            Console.WriteLine("Price: P" + price + " quantity: " + quantity + "x");
-            Console.WriteLine("");
-            Console.WriteLine("Range of date to receive: " + month + " " + day);
-            Console.WriteLine("");
-            Console.Write("Shop discount: ");
-            if (price > 50)
+            bool given = showDetailsOption();
+            while (given)
             {
-                Console.WriteLine("Free shipping");
+                Given();
+                break;
             }
+        }
+
+        static bool showDetailsOption()
+        {
+            Console.Write("Do you want to use the default info(y/n)? ");
+            bool given = false;
+            string firstAnswer = Console.ReadLine();
+
+            switch (firstAnswer)
+            {
+                case "y":
+                    given = true;
+                    break;
+                default:
+                    Compare c = new Compare();
+                    c.register();
+                    Given();
+                    break;
+            }
+            return given;
+        }
+
+        static void Given()
+        {
+            savedData data = new savedData();
+            Compare c = new Compare();
+            Console.WriteLine("");
+            Console.WriteLine(data.getBuyer() + " | +63 " + data.getNumber());
+            Console.WriteLine(data.getAddress());
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine(data.getStore());
+            Console.WriteLine("Product for example: " + data.getProduct());
+            Console.WriteLine("Price: P" + data.getPrice() + " Quantity: " + data.getQuantity() + "x");
+            Console.WriteLine("");
+            Console.WriteLine("Range of Date to Receive: " + data.getMonth() + " " + data.getDay());
+            Console.WriteLine("Shop Discount: ");
             Console.WriteLine("");
             Console.WriteLine("Order Summary");
-            Console.WriteLine("Product Subtotal: " + pro);
-            Console.WriteLine("Shipping Subtotal: " + fee);
-            if (price > 50)
-            {
-                Console.WriteLine("                  -" + fee);
-            }
-            Console.WriteLine("Total: " + total);
+            Console.WriteLine("Product Subtotal: " + data.getSub());
+            Console.WriteLine("Shipping Subtotal: " + data.getFee());
             Console.WriteLine("");
-            Console.WriteLine("Payment Method");
-            if (method == 1)
-            {
-                Console.WriteLine("Cash on delivery");
-            }
-            Console.WriteLine("                         Place Order");
+            Console.WriteLine("Total: " + data.getTotal());
+            Console.WriteLine("Payment Method: ");
+            Console.WriteLine("Type(1) COD");
+            Console.WriteLine("Type(2) Maya");
+            Console.WriteLine("Type(3) G-Cash");
+            Console.WriteLine("Type(4) Bank account");
+            //Console.WriteLine(c.method);
+            Console.WriteLine("                             Place Order");
         }
     }
 }
