@@ -1,65 +1,57 @@
 ﻿using shipmentModel;
-using System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace shipmentData
 {
     public class savedData
     {
-        public string getBuyer()
+        public List<Shipment> data1 = new List<Shipment>();
+        public List<Details> data2 = new List<Details>();
+        public savedData()
         {
-            string buyer = "clark";
-            return buyer;
+            Shipment shipment = new Shipment { ShipmentId = Guid.NewGuid(), Buyer = "clark", Number = "987 654 3210", Address = "santolan" };
+            data1.Add(shipment);
+            Details details = new Details { Store = "E-commerce Store", Product = "Apple", Price = 99999999, Quantity = 9, Month = "December", Day = 20, Discount = "Free shipping", Fee = 30 };
+            data2.Add(details);
         }
-        public string getNumber()
+        public void Add(Shipment shipment)
         {
-            string number = "987 654 3210";
-            return number;
+            data1.Add(shipment);
+            //string number = "987 654 3210";
+            //return number;
         }
-        public string getAddress()
+        //public string getAddress()
+        public Shipment? GetById(Guid id)
         {
-            string address = "santolan";
-            return address;
+            return data1.FirstOrDefault(a => a.ShipmentId == id);
         }
-        public string getStore()
+        public Shipment? GetByBuyer(string buyer)
         {
-            string store = "E-commerce Store";
-            return store;
+            return data1.FirstOrDefault(a => a.Buyer == buyer);
         }
-        public string getProduct()
+        public bool BuyerExists(string buyer)
         {
-            string store = "Apple";
-            return store;
+            return data1.Any(a => a.Buyer == buyer);
         }
-        public int getPrice()
+        public void AddShipment(Shipment shipment)
         {
-            int price = 99999999;
-            return price;
+            data1.Add(shipment);
         }
-        public int getQuantity()
+        public List<Shipment> GetShipment()
         {
-            int quantity = 9;
-            return quantity;
+            return data1;
         }
-        public int getMonth()
+        public List<Details> GetDetails()
         {
-            int month = 1;
-            return month;
+            return data2;
         }
-        public int getDay()
-        {
-            int day = 20;
-            return day;
-        }
+
         public int getSub()
         {
-            int sub = getPrice() * getQuantity();
+            Details details = new Details();
+            int price = details.Price;
+            int quantity = details.Quantity;
+            int sub = price * quantity;
             return sub;
-        }
-        public int getFee()
-        {
-            int fee = 30;
-            return fee;
         }
         public int getTotal()
         {

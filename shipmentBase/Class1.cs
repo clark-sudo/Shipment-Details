@@ -1,30 +1,26 @@
-﻿using System;
-using System.Security.Cryptography.X509Certificates;
-using shipmentData;
+﻿using shipmentData;
 using shipmentModel;
+using System.Security.Principal;
 
 namespace shipmentBase
 {
     public class Compare
     {
         savedData data = new savedData();
-        public void register(char firstChar)
+
+        public bool Register(Shipment newShipment)
         {
-            do
-            {
-                Console.Write("Enter your Name: ");
-                string buyer = Console.ReadLine();
-                Console.Write("Enter your Contact +63 ");
-                string number = Console.ReadLine();
-                Console.Write("Enter your Address: ");
-                string address = Console.ReadLine();
-                Console.Write("Do you want to use it as default info(y/n)? ");
-                string str = Console.ReadLine();
-                if (!string.IsNullOrEmpty(str))
-                    firstChar = char.ToLower(str[0]);
-                else
-                    firstChar = 'n';
-            } while (firstChar != 'y');
+
+            if (data.BuyerExists(newShipment.Buyer))
+                return false;
+            //var account = new Shipment
+            //{
+            //    Buyer = newShipment.Buyer,
+            //    Number = newShipment.Number
+
+            //};
+            data.Add(newShipment);
+            return true;
         }
 
         //public string check()
@@ -86,34 +82,24 @@ namespace shipmentBase
         //    }
         //}
 
-        public void register()
+        public bool Authenticate(string number, string address)
         {
-            throw new NotImplementedException();
+            var account = data.GetByBuyer(number);
+
+            if (account == null)
+                return false;
+
+            return account.Address == address;
         }
 
-        public void method()
+        public List<Shipment> GetShipment()
         {
-            Console.Write("Please Enter: ");
-            string payment = Console.ReadLine();
-            switch (payment)
-            {
-                case "1":
-                    Console.WriteLine("Cash on Delivery");
-                    break;
-                case "2":
-                    Console.WriteLine("Maya");
-                    break;
-                case "3":
-                    Console.WriteLine("G-Cash");
-                    break;
-                case "4":
-                    Console.WriteLine("Bank account");
-                    break;
-                default:
-                    Console.WriteLine("Invalid Input");
-                    break;
-            }
-        }
+            return data.GetShipment();
 
+        }
+        public Shipment? GetShipment(Guid shipmentId)
+        {
+            return data.GetById(shipmentId);
+        }
     }
 }
