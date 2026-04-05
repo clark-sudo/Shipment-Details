@@ -1,17 +1,24 @@
 ﻿using shipmentData;
 using shipmentModel;
-using System.Security.Principal;
 
 namespace shipmentBase
 {
     public class Compare
     {
-        savedData data = new savedData();
+        savedData data1 = new savedData(new ShipmentDBData());
+        savedDataInMemory inMemoryData = new savedDataInMemory();
+        shipmentJsonData jsonData = new shipmentJsonData();
+
+        //public Compare()
+        //{
+        //    ShipmentDBData shipmentDBData = new ShipmentDBData();
+        //    //shipmentJsonData jsonData = new shipmentJsonData();
+        //}
 
         public bool Register(Shipment newShipment)
         {
 
-            if (data.BuyerExists(newShipment.Buyer))
+            if (data1.BuyerExists(newShipment.Buyer))
                 return false;
             //var account = new Shipment
             //{
@@ -19,7 +26,7 @@ namespace shipmentBase
             //    Number = newShipment.Number
 
             //};
-            data.Add(newShipment);
+            data1.Add(newShipment);
             return true;
         }
 
@@ -68,23 +75,53 @@ namespace shipmentBase
 
         //}
 
-        //public void compare()
-        //{
-        //    savedData data = new savedData();
-        //    if (data.getSub() >= 50)
-        //    {
-        //        Console.Write("Shop Discount: Free Shipping");
-        //        Console.WriteLine("");
-        //        Console.WriteLine("Order Summary");
-        //        Console.WriteLine("Product Subtotal: " + data.getSub());
-        //        Console.WriteLine("Shipping Subtotal:  " + data.getFee());
-        //        Console.WriteLine("                   -" + data.getFee());
-        //    }
-        //}
-
-        public bool Authenticate(string number, string address)
+        public int SubTotal()
         {
-            var account = data.GetByBuyer(number);
+            int quantity = inMemoryData.GetDetails().First().Quantity;
+            int price = inMemoryData.GetDetails().First().Price;
+            int subTotal = price * quantity;
+            return subTotal;
+        }
+
+        public int Shipping(int fee)
+        {
+            if (SubTotal() >= 50)
+            {
+                fee = inMemoryData.GetDetails().First().Fee;
+            }
+            else
+            {
+                fee = 0;
+            }
+            return fee;
+        }
+
+        public int Total(int fee)
+        {
+            int shippingFee = Shipping(fee);
+            int subTotal = SubTotal() + inMemoryData.GetDetails().First().Fee;
+            int total = subTotal - shippingFee;
+            return total;
+        }
+
+        public void Update(Guid ShipmentId, string newName, string newContact, string newAddress)
+        {
+            var info = data1.GetShipment();
+            var updInfo = info.FirstOrDefault(t => t.ShipmentId == ShipmentId);
+            if (updInfo != null)
+            {
+                updInfo.Buyer = newName;
+                updInfo.Number = newContact;
+                updInfo.Address = newAddress;
+                data1.Update(updInfo);
+                jsonData.Update(updInfo);
+                inMemoryData.Update(updInfo);
+            }
+        }
+
+        public bool Authenticate(string buyer, string number, string address)
+        {
+            var account = data1.GetByBuyer(buyer);
 
             if (account == null)
                 return false;
@@ -94,12 +131,12 @@ namespace shipmentBase
 
         public List<Shipment> GetShipment()
         {
-            return data.GetShipment();
+            return data1.GetShipment();
 
         }
         public Shipment? GetShipment(Guid shipmentId)
         {
-            return data.GetById(shipmentId);
+            return data1.GetById(shipmentId);
         }
     }
 }

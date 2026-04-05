@@ -20,6 +20,5 @@ namespace shipmentModel
         public int Day { get; set; }
         public int Fee { get; set; }
         public string Discount { get; set; }
-        public int Sub { get; set; }
     }
 }

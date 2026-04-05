@@ -1,62 +1,40 @@
 ﻿using shipmentModel;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace shipmentData
 {
     public class savedData
     {
-        public List<Shipment> data1 = new List<Shipment>();
-        public List<Details> data2 = new List<Details>();
-        public savedData()
+        iShipmentData _savedData;
+        public savedData(iShipmentData SavedData)
         {
-            Shipment shipment = new Shipment { ShipmentId = Guid.NewGuid(), Buyer = "clark", Number = "987 654 3210", Address = "santolan" };
-            data1.Add(shipment);
-            Details details = new Details { Store = "E-commerce Store", Product = "Apple", Price = 99999999, Quantity = 9, Month = "December", Day = 20, Discount = "Free shipping", Fee = 30 };
-            data2.Add(details);
+            _savedData = SavedData;
         }
         public void Add(Shipment shipment)
         {
-            data1.Add(shipment);
-            //string number = "987 654 3210";
-            //return number;
-        }
-        //public string getAddress()
-        public Shipment? GetById(Guid id)
-        {
-            return data1.FirstOrDefault(a => a.ShipmentId == id);
-        }
-        public Shipment? GetByBuyer(string buyer)
-        {
-            return data1.FirstOrDefault(a => a.Buyer == buyer);
-        }
-        public bool BuyerExists(string buyer)
-        {
-            return data1.Any(a => a.Buyer == buyer);
-        }
-        public void AddShipment(Shipment shipment)
-        {
-            data1.Add(shipment);
+            _savedData.Add(shipment);
         }
         public List<Shipment> GetShipment()
         {
-            return data1;
+            return _savedData.GetShipment();
         }
-        public List<Details> GetDetails()
+        public Shipment? GetById(Guid id)
         {
-            return data2;
+            return _savedData.GetById(id);
         }
-
-        public int getSub()
+        public Shipment? GetByBuyer(string buyer)
         {
-            Details details = new Details();
-            int price = details.Price;
-            int quantity = details.Quantity;
-            int sub = price * quantity;
-            return sub;
+            return _savedData.GetByBuyer(buyer);
         }
-        public int getTotal()
+        public void Update(Shipment shipment)
         {
-            int total = getSub();
-            return total;
+            _savedData.Update(shipment);
+        }
+        public bool BuyerExists(string buyer)
+        {
+            return _savedData.BuyerExists(buyer);
         }
     }
 }

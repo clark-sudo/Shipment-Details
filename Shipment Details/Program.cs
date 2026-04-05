@@ -1,36 +1,39 @@
-﻿using System;
-using shipmentBase;
+﻿using shipmentBase;
 using shipmentData;
 using shipmentModel;
+using System;
+using static Microsoft.Data.SqlClient.Internal.SqlClientEventSource;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace shipmentDetails
 {
     internal class Program
     {
-        static List<string> accesslogs = new List<string>();
-
-        static List<string> buyerName = new List<string>();
-        static List<string> numberC = new List<string>();
-        static List<string> addressM = new List<string>();
-
         static Compare compare = new Compare();
-        static savedData data = new savedData();
+        static savedDataInMemory data = new savedDataInMemory();
+        static int fee;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Order Confirmation");
+            Console.WriteLine("Order confirmation");
+
             bool given = Option();
+
             while (given)
             {
                 Given();
                 break;
-                //given = showDetailsOption();
             }
         }
 
         static bool Option()
         {
-            Console.Write("Do you want to use the default info(y/n)? ");
+            var example = compare.GetShipment();
+            for (int i = 0; i < example.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {example[i].Buyer} | (+63){example[i].Number} | {example[i].Address}"); ;
+            }
+            Console.Write("Do you want to change the default info(y/n)? ");
             bool given = false;
             string firstAnswer = Console.ReadLine();
             char input = Char.ToLower(firstAnswer[0]);
@@ -38,65 +41,13 @@ namespace shipmentDetails
             switch (input)
             {
                 case 'y':
+                    Update();
                     given = true;
                     break;
                 case 'n':
                     Register();
-                    Given();
-                    break;
-                default:
-                    Console.WriteLine("()Loading....");
-                    Environment.Exit(0);
-                    break;
-            }
-            return given;
-        }
-
-        static bool Register()
-        {
-            Console.Write("Enter your Name: ");
-            string buyer = Console.ReadLine();
-            //for (int i = 0; i < buyerName.Count; i++)
-            //{
-            //    if (buyerName[i] == buyer)
-            //    {
-            //        Console.WriteLine("enter new username: ");
-            //        string newusername = Console.ReadLine();
-            //        Console.WriteLine("enter new password: ");
-            //        string newpassword = Console.ReadLine();
-
-            //        if (ValidateUserName(newusername))
-            //        {
-            //            buyerName[i] = newusername;
-            //            numberC[i] = newpassword;
-            //        }
-            //        else
-            //        {
-            //            Console.WriteLine("user name already exists.");
-            //        }
-            //    }
-            //}
-            Console.Write("Enter your Contact +63 ");
-            string number = Console.ReadLine();
-            Console.Write("Enter your Address: ");
-            string address = Console.ReadLine();
-            //bool isMatched = compare.Authenticate(number, address);
-
-            //AddAccessLogs(buyer, number, address, isMatched);
-            Console.Write("Do you want to use it as default info(y/n)? ");
-            bool given = false;
-            string secondAnswer = Console.ReadLine();
-            //Shipment newShipment = new Shipment { ShipmentId = Guid.NewGuid(), Buyer = buyer, Number = number, Address = address };
-            //compare.Register(newShipment);
-
-            switch (secondAnswer)
-            {
-                case "y":
                     given = true;
                     break;
-                case "n":
-                    Option();
-                    break;
                 default:
                     Console.WriteLine("()Loading....");
                     Environment.Exit(0);
@@ -105,42 +56,90 @@ namespace shipmentDetails
             return given;
         }
 
-        static bool ValidateUserName(string buyer)
+        static void Update()
         {
-            bool valid = true;
-            foreach (var un in buyerName)
+            var example = compare.GetShipment();
+            Console.Write("\nChoose a number to Select: ");
+            int index = Convert.ToInt32(Console.ReadLine()) - 1;
+            if (index < 0 || index >= example.Count)
             {
-                if (un == buyer)
-                {
-                    valid = false;
-                }
+                Console.WriteLine("\nPlease read or add new contact information.");
+                Option();
             }
-            return valid;
+            Guid selectedId = example[index].ShipmentId;
+            Console.Write("Enter new Username: ");
+            string newName = Console.ReadLine();
+            Console.Write("Enter new Contact +63 ");
+            string newContact = Console.ReadLine();
+            Console.Write("Enter new Address: ");
+            string newAddress = Console.ReadLine();
+            compare.Update(selectedId, newName, newContact, newAddress);
+            Console.WriteLine("Successfully updated!");
+            return;
+        }
+
+        static void Register()
+        {
+            var example = compare.GetShipment();
+            Console.Write("Choose a number to Select: ");
+            int index = Convert.ToInt32(Console.ReadLine()) - 1;
+            if (index < 0 || index >= example.Count)
+            {
+                Console.WriteLine("Please add new contact information.");
+                Console.Write("Enter your Name: ");
+                string buyer = Console.ReadLine();
+                Console.Write("Enter your Contact +63 ");
+                string number = Console.ReadLine();
+                Console.Write("Enter your Address: ");
+                string address = Console.ReadLine();
+
+                Console.Write("Do you want to use it as default info(y/n)? ");
+                bool given = false;
+                string secondAnswer = Console.ReadLine();
+                Shipment newShipment = new Shipment { ShipmentId = Guid.NewGuid(), Buyer = buyer, Number = number, Address = address };
+                compare.Register(newShipment);
+
+                switch (secondAnswer)
+                {
+                    case "y":
+                        given = true;
+                        break;
+                    case "n":
+                        Option();
+                        break;
+                    default:
+                        Console.WriteLine("()Loading....");
+                        Environment.Exit(0);
+                        break;
+                }
+                return;
+            }
         }
 
         static void Given()
         {
+
             Console.WriteLine("");
-            Console.WriteLine($"{data.GetShipment().First().Buyer} | +63 {data.GetShipment().First().Number}");
-            Console.WriteLine($"{data.GetShipment().First().Address}");
+            Console.WriteLine($"{data.GetShipment().Last().Buyer} | (+63){data.GetShipment().Last().Number}");
+            Console.WriteLine($"{data.GetShipment().Last().Address}");
             Console.WriteLine("----------------------------------------");
             Console.WriteLine($"{data.GetDetails().First().Store}");
             Console.WriteLine($"Product for example: {data.GetDetails().First().Product}");
             Console.WriteLine($"Price: P{data.GetDetails().First().Price} Quantity: {data.GetDetails().First().Quantity}x");
             Console.WriteLine("");
             Console.WriteLine($"Range of Date to receive: {data.GetDetails().First().Month} {data.GetDetails().First().Day}");
+            Console.WriteLine("");
             Console.WriteLine($"Shop discount: {data.GetDetails().First().Discount}");
             Console.WriteLine("");
             Console.WriteLine("Order Summary");
-            Console.WriteLine("Product Subtotal: " + data.getSub());
+            Console.WriteLine("Product Subtotal: " + compare.SubTotal());
             Console.WriteLine($"Shipping Subtotal: {data.GetDetails().First().Fee}");
-            Console.WriteLine($"                  -{data.GetDetails().First().Fee}");
-            Console.WriteLine("Total: " + data.getTotal());
+            Console.WriteLine($"                  -" + compare.Shipping(fee));
+            Console.WriteLine("Total: " + compare.Total(fee));
+            Console.WriteLine("");
             Console.WriteLine("Payment Method: ");
-            Console.WriteLine("Type(1) COD");
-            Console.WriteLine("Type(2) Maya");
-            Console.WriteLine("Type(3) G-Cash");
-            Console.WriteLine("Type(4) Bank account");
+            string[] paymentMethod = new string[] { "COD", "Maya", "G-Cash", "Bank account" };
+            ShowOptions(paymentMethod);
             Choices();
         }
 
@@ -172,10 +171,12 @@ namespace shipmentDetails
             return given;
         }
 
-        static void AddAccessLogs(string buyer, string number, string address, bool status)
+        static void ShowOptions(string[] methods)
         {
-            accesslogs.Add($"username: {buyer}, phone: {number}, home: {address}, Is Successful?: {status}");
+            for (int x = 0; x < methods.Length; x++)
+            {
+                Console.WriteLine($"[{x + 1}] {methods[x]}");
+            }
         }
-
     }
 }
