@@ -7,21 +7,26 @@ namespace shipmentData
     public class savedDataInMemory : iShipmentData
     {
         public List<Shipment> data1 = new List<Shipment>();
-        public List<Details> data2 = new List<Details>();
         public savedDataInMemory()
         {
-            Shipment shipment = new Shipment { ShipmentId = Guid.NewGuid(), Buyer = "clark", Number = "987 654 3210", Address = "santolan" };
+            Shipment shipment = new Shipment
+            {
+                ShipmentId = Guid.NewGuid(),
+                Buyer = "clark",
+                Number = "987 654 3210",
+                Address = "santolan",
+                Store = "E-commerce Store",
+                Product = "Apple",
+                Price = 99999999,
+                Quantity = 9,
+                Fee = 30
+            };
             data1.Add(shipment);
-            Details details = new Details { Store = "E-commerce Store", Product = "Apple", Price = 99999999, Quantity = 9, Month = "December", Day = 20, Discount = "Free shipping", Fee = 30 };
-            data2.Add(details);
         }
         public void Add(Shipment shipment)
         {
             data1.Add(shipment);
-            //string number = "987 654 3210";
-            //return number;
         }
-        //public string getAddress()
         public Shipment? GetById(Guid id)
         {
             return data1.FirstOrDefault(a => a.ShipmentId == id);
@@ -49,10 +54,6 @@ namespace shipmentData
         public List<Shipment> GetShipment()
         {
             return data1;
-        }
-        public List<Details> GetDetails()
-        {
-            return data2;
         }
     }
 }

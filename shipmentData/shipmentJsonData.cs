@@ -23,7 +23,18 @@ namespace shipmentData
 
             if (data1.Count <= 0)
             {
-                data1.Add(new Shipment { ShipmentId = Guid.NewGuid(), Buyer = "clark", Number = "9876543210", Address = "santolan" });
+                data1.Add(new Shipment
+                {
+                    ShipmentId = Guid.NewGuid(),
+                    Buyer = "clark",
+                    Number = "987 654 3210",
+                    Address = "santolan",
+                    Store = "E-commerce Store",
+                    Product = "Apple",
+                    Price = 99999999,
+                    Quantity = 9,
+                    Fee = 30
+                });
                 SaveDataToJsonFile();
             }
         }

@@ -24,19 +24,35 @@ namespace shipmentData
 
             if (existing.Count == 0)
             {
-                Shipment shipment = new Shipment { ShipmentId = Guid.NewGuid(), Buyer = "clark", Number = "9876543210", Address = "santolan" };
+                Shipment shipment = new Shipment
+                {
+                    ShipmentId = Guid.NewGuid(),
+                    Buyer = "clark",
+                    Number = "9876543210",
+                    Address = "santolan",
+                    Store = "E-commerce Store",
+                    Product = "Apple",
+                    Price = 99999999,
+                    Quantity = 9,
+                    Fee = 30
+                };
 
                 Add(shipment);
             }
         }
         public void Add(Shipment shipment)
         {
-            var insertStatement = "INSERT INTO Shipments VALUES (@ShipmentId, @Buyer, @Number, @Address)";
+            var insertStatement = "INSERT INTO Shipment VALUES (@ShipmentId, @Buyer, @Number, @Address, @Store, @Product, @Price, @Quantity, @Fee)";
             SqlCommand insertCommand = new SqlCommand(insertStatement, sqlConnection);
             insertCommand.Parameters.AddWithValue("@ShipmentId", shipment.ShipmentId);
             insertCommand.Parameters.AddWithValue("@Buyer", shipment.Buyer);
             insertCommand.Parameters.AddWithValue("@Number", shipment.Number);
             insertCommand.Parameters.AddWithValue("@Address", shipment.Address);
+            insertCommand.Parameters.AddWithValue("@Store", shipment.Store);
+            insertCommand.Parameters.AddWithValue("@Product", shipment.Product);
+            insertCommand.Parameters.AddWithValue("@Price", shipment.Price);
+            insertCommand.Parameters.AddWithValue("@Quantity", shipment.Quantity);
+            insertCommand.Parameters.AddWithValue("@Fee", shipment.Fee);
             sqlConnection.Open();
 
             insertCommand.ExecuteNonQuery();
@@ -45,7 +61,7 @@ namespace shipmentData
         }
         public List<Shipment> GetShipment()
         {
-            string selectStatement = "SELECT ShipmentId, Buyer, Number, Address FROM Shipments";
+            string selectStatement = "SELECT ShipmentId, Buyer, Number, Address, Store, Product, Price, Quantity, Fee FROM Shipment";
 
             SqlCommand selectCommand = new SqlCommand(selectStatement, sqlConnection);
 
@@ -62,6 +78,11 @@ namespace shipmentData
                 shipment.Buyer = reader["Buyer"].ToString();
                 shipment.Number = reader["Number"].ToString();
                 shipment.Address = reader["Address"].ToString();
+                shipment.Store = reader["Store"].ToString();
+                shipment.Product = reader["Product"].ToString();
+                shipment.Price = Convert.ToInt32(reader["Price"]);
+                shipment.Quantity = Convert.ToInt32(reader["Quantity"]);
+                shipment.Fee = Convert.ToInt32(reader["Fee"]);
 
                 shipments.Add(shipment);
             }
@@ -70,7 +91,7 @@ namespace shipmentData
         }
         public Shipment? GetById(Guid id)
         {
-            var selectStatement = "SELECT ShipmentId, Buyer, Number, Adress FROM Shipments WHERE ShipmentId = @ShipmentId";
+            var selectStatement = "SELECT ShipmentId, Buyer, Number, Address, Store, Product, Price, Quantity, Fee FROM Shipment WHERE ShipmentId = @ShipmentId";
             SqlCommand selectCommand = new SqlCommand(selectStatement, sqlConnection);
             selectCommand.Parameters.AddWithValue("@ShipmentId", id.ToString());
             sqlConnection.Open();
@@ -84,6 +105,11 @@ namespace shipmentData
                 shipment.Buyer = reader["Buyer"].ToString();
                 shipment.Number = reader["Number"].ToString();
                 shipment.Address = reader["Address"].ToString();
+                shipment.Store = reader["Store"].ToString();
+                shipment.Product = reader["Product"].ToString();
+                shipment.Price = Convert.ToInt32(reader["Price"]);
+                shipment.Quantity = Convert.ToInt32(reader["Quantity"]);
+                shipment.Fee = Convert.ToInt32(reader["Fee"]);
             }
 
             sqlConnection.Close();
@@ -91,7 +117,7 @@ namespace shipmentData
         }
         public Shipment? GetByBuyer(string buyer)
         {
-            var selectStatement = "SELECT ShipmentId, Buyer, Number, Address FROM Shipments WHERE Buyer = @buyer";
+            var selectStatement = "SELECT ShipmentId, Buyer, Number, Address, Store, Product, Price, Quantity, Fee FROM Shipment WHERE Buyer = @buyer";
             SqlCommand selectCommand = new SqlCommand(selectStatement, sqlConnection);
             selectCommand.Parameters.AddWithValue("@Buyer", buyer);
             sqlConnection.Open();
@@ -105,6 +131,11 @@ namespace shipmentData
                 shipment.Buyer = reader["Buyer"].ToString();
                 shipment.Number = reader["Number"].ToString();
                 shipment.Address = reader["Address"].ToString();
+                shipment.Store = reader["Store"].ToString();
+                shipment.Product = reader["Product"].ToString();
+                shipment.Price = Convert.ToInt32(reader["Price"]);
+                shipment.Quantity = Convert.ToInt32(reader["Quantity"]);
+                shipment.Fee = Convert.ToInt32(reader["Fee"]);
             }
 
             sqlConnection.Close();
@@ -115,13 +146,18 @@ namespace shipmentData
         {
             sqlConnection.Open();
 
-            var updateStatement = $"UPDATE Shipments SET Buyer = @Buyer, Number = @Number, Address = @Address WHERE ShipmentId = @ShipmentId";
+            var updateStatement = $"UPDATE Shipment SET Buyer = @Buyer, Number = @Number, Address = @Address, Store = @Store, Product = @Product, Price = @Price, Quantity = @Quantity, Fee = @Fee WHERE ShipmentId = @ShipmentId";
 
             SqlCommand updateCommand = new SqlCommand(updateStatement, sqlConnection);
 
             updateCommand.Parameters.AddWithValue("@Buyer", shipment.Buyer);
             updateCommand.Parameters.AddWithValue("@Number", shipment.Number);
             updateCommand.Parameters.AddWithValue("@Address", shipment.Address);
+            updateCommand.Parameters.AddWithValue("@Store", shipment.Store);
+            updateCommand.Parameters.AddWithValue("@Product", shipment.Product);
+            updateCommand.Parameters.AddWithValue("@Price", shipment.Price);
+            updateCommand.Parameters.AddWithValue("@Quantity", shipment.Quantity);
+            updateCommand.Parameters.AddWithValue("@Fee", shipment.Fee);
             updateCommand.Parameters.AddWithValue("@ShipmentId", shipment.ShipmentId);
             updateCommand.ExecuteNonQuery();
 
@@ -130,7 +166,7 @@ namespace shipmentData
 
         public bool BuyerExists(string buyer)
         {
-            var selectStatement = "SELECT ShipmentId, Buyer, Number, Address FROM Shipments WHERE Buyer = @Buyer";
+            var selectStatement = "SELECT ShipmentId, Buyer, Number, Address, Store, Product, Price, Quantity, Fee FROM Shipment WHERE Buyer = @Buyer";
             SqlCommand selectCommand = new SqlCommand(selectStatement, sqlConnection);
             selectCommand.Parameters.AddWithValue("@Buyer", buyer);
             sqlConnection.Open();
@@ -144,6 +180,11 @@ namespace shipmentData
                 shipment.Buyer = reader["Buyer"].ToString();
                 shipment.Number = reader["Number"].ToString();
                 shipment.Address = reader["Address"].ToString();
+                shipment.Store = reader["Store"].ToString();
+                shipment.Product = reader["Product"].ToString();
+                shipment.Price = Convert.ToInt32(reader["Price"]);
+                shipment.Quantity = Convert.ToInt32(reader["Quantity"]);
+                shipment.Fee = Convert.ToInt32(reader["Fee"]);
             }
 
             sqlConnection.Close();

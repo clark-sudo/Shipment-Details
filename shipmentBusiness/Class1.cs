@@ -5,29 +5,20 @@ namespace shipmentBusiness
 {
     public class Compare
     {
-        savedData data1 = new savedData(new ShipmentDBData());
-        savedDataInMemory inMemoryData = new savedDataInMemory();
+        savedData data1 = new savedData(new savedDataInMemory());
         shipmentJsonData jsonData = new shipmentJsonData();
 
-        //public Compare()
-        //{
-        //    ShipmentDBData shipmentDBData = new ShipmentDBData();
-        //    //shipmentJsonData jsonData = new shipmentJsonData();
-        //}
-
-        public bool Register(Shipment newShipment)
+        public void Add(Guid ShipmentId, int addQuantity)
         {
-
-            if (data1.BuyerExists(newShipment.Buyer))
-                return false;
-            //var account = new Shipment
-            //{
-            //    Buyer = newShipment.Buyer,
-            //    Number = newShipment.Number
-
-            //};
-            data1.Add(newShipment);
-            return true;
+            var quantity = data1.GetShipment();
+            var updQuantity = quantity.FirstOrDefault(t => t.ShipmentId == ShipmentId);
+            int totalQuantity = updQuantity.Quantity + addQuantity;
+            if (updQuantity != null)
+            {
+                updQuantity.Quantity = totalQuantity;
+                data1.Update(updQuantity);
+                jsonData.Update(updQuantity);
+            }
         }
 
         //public string check()
@@ -77,8 +68,8 @@ namespace shipmentBusiness
 
         public int SubTotal()
         {
-            int quantity = inMemoryData.GetDetails().First().Quantity;
-            int price = inMemoryData.GetDetails().First().Price;
+            int quantity = data1.GetShipment().First().Quantity;
+            int price = data1.GetShipment().First().Price;
             int subTotal = price * quantity;
             return subTotal;
         }
@@ -87,7 +78,7 @@ namespace shipmentBusiness
         {
             if (SubTotal() >= 50)
             {
-                fee = inMemoryData.GetDetails().First().Fee;
+                fee = data1.GetShipment().First().Fee;
             }
             else
             {
@@ -99,23 +90,32 @@ namespace shipmentBusiness
         public int Total(int fee)
         {
             int shippingFee = Shipping(fee);
-            int subTotal = SubTotal() + inMemoryData.GetDetails().First().Fee;
+            int subTotal = SubTotal() + data1.GetShipment().First().Fee;
             int total = subTotal - shippingFee;
             return total;
         }
 
-        public void Update(Guid ShipmentId, string newName, string newContact, string newAddress)
+        public void Update(Guid ShipmentId, int subQuantity)
         {
-            var info = data1.GetShipment();
-            var updInfo = info.FirstOrDefault(t => t.ShipmentId == ShipmentId);
-            if (updInfo != null)
+            var quantity = data1.GetShipment();
+            var updQuantity = quantity.FirstOrDefault(t => t.ShipmentId == ShipmentId);
+            if (updQuantity != null)
             {
-                updInfo.Buyer = newName;
-                updInfo.Number = newContact;
-                updInfo.Address = newAddress;
-                data1.Update(updInfo);
-                jsonData.Update(updInfo);
-                inMemoryData.Update(updInfo);
+                updQuantity.Quantity = subQuantity;
+                data1.Update(updQuantity);
+                jsonData.Update(updQuantity);
+            }
+        }
+
+        public void Delete(Guid ShipmentId)
+        {
+            var order = data1.GetShipment();
+            var delOrder = order.FirstOrDefault(t => t.ShipmentId == ShipmentId);
+            if (delOrder != null)
+            {
+                order.Remove(delOrder);
+                data1.Update(delOrder);
+                jsonData.Update(delOrder);
             }
         }
 
