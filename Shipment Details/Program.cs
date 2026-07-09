@@ -1,40 +1,209 @@
 ﻿using shipmentBusiness;
 using shipmentData;
 using shipmentModel;
+using System.Runtime.CompilerServices;
+using System.Security.Principal;
 using System;
 using static Microsoft.Data.SqlClient.Internal.SqlClientEventSource;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace shipmentDetails
+
+namespace testRun
 {
     internal class Program
     {
-        static Compare compare = new Compare();
-        static int fee;
+        static string[] availableItems = new string[] { "Monitor", "Printer", "Speaker", "System Unit", "Projector" };
+        static int x, price, fee;
+        static short quantity, index;
+        static string product;
+        static bool given;
 
+        static Compare compare = new Compare();
         static void Main(string[] args)
         {
-            Console.WriteLine("Order confirmation");
-
-            Orders();
+            Console.WriteLine("E-commerce Store\n");
+            showItems(availableItems);
+            Add();
         }
-
-        static void Orders()
+        static void Add()
         {
-            var example = compare.GetShipment();
-            for (int i = 0; i < example.Count; i++)
+            var unitPrice = compare.GetShipments();
+            for (x = 0; x <= 100; x--)
             {
-                Console.WriteLine($"\n{example[i].Buyer} | (+63){example[i].Number} | {example[i].Address}"); ;
+                Console.Write("\nType 0 if nothing to add.\nEnter the number of the item to order: ");
+                string order = Console.ReadLine();
+
+                switch (order)
+                {
+                    case "0":
+                        x = 1000;
+                        break;
+                    case "1":
+                        Console.Write($"Enter how many {availableItems[0]} you want to order: ");
+                        quantity = Convert.ToInt16(Console.ReadLine());
+                        product = availableItems[0];
+                        fee = unitPrice[x].Fee;
+                        price = unitPrice[x].Price;
+                        Shipments add1 = new Shipments { ShipmentId = Guid.NewGuid(), Product = product, Quantity = quantity, Price = price, Fee = fee };
+
+                        compare.Create(add1);
+
+                        Console.WriteLine($"Successfully added order {add1.ShipmentId}");
+                        x += 1;
+                        break;
+                    case "2":
+                        Console.Write($"Enter how many {availableItems[1]} you want to order: ");
+                        quantity = Convert.ToInt16(Console.ReadLine());
+                        product = availableItems[1];
+                        fee = unitPrice[x].Fee;
+                        price = unitPrice[x].Price;
+                        Shipments add2 = new Shipments { ShipmentId = Guid.NewGuid(), Product = product, Quantity = quantity, Price = price, Fee = fee };
+
+                        compare.Create(add2);
+
+                        Console.WriteLine($"Successfully added order {add2.ShipmentId}");
+                        x += 1;
+                        break;
+                    case "3":
+                        Console.Write($"Enter how many {availableItems[2]} you want to order: ");
+                        quantity = Convert.ToInt16(Console.ReadLine());
+                        product = availableItems[2];
+                        fee = unitPrice[x].Fee;
+                        price = unitPrice[x].Price;
+                        Shipments add3 = new Shipments { ShipmentId = Guid.NewGuid(), Product = product, Quantity = quantity, Price = price, Fee = fee };
+
+                        compare.Create(add3);
+
+                        Console.WriteLine($"Successfully added order {add3.ShipmentId}");
+                        x += 1;
+                        break;
+                    case "4":
+                        Console.Write($"Enter how many {availableItems[3]} you want to order: ");
+                        quantity = Convert.ToInt16(Console.ReadLine());
+                        product = availableItems[3];
+                        fee = unitPrice[x].Fee;
+                        price = unitPrice[x].Price;
+                        Shipments add4 = new Shipments { ShipmentId = Guid.NewGuid(), Product = product, Quantity = quantity, Price = price, Fee = fee };
+
+                        compare.Create(add4);
+
+                        Console.WriteLine($"Successfully added order {add4.ShipmentId}");
+                        x += 1;
+                        break;
+                    case "5":
+                        Console.Write($"Enter how many {availableItems[4]} you want to order: ");
+                        quantity = Convert.ToInt16(Console.ReadLine());
+                        product = availableItems[4];
+                        fee = unitPrice[x].Fee;
+                        price = unitPrice[x].Price;
+                        Shipments add5 = new Shipments { ShipmentId = Guid.NewGuid(), Product = product, Quantity = quantity, Price = price, Fee = fee };
+
+                        compare.Create(add5);
+
+                        Console.WriteLine($"Successfully added order {add5.ShipmentId}");
+                        x += 1;
+                        break;
+                    default:
+                        Console.WriteLine("Incorrect input. Please check the list of available items above.");
+                        x +=1;
+                        break;
+                }
             }
-            Console.WriteLine("----------------------------------------");
-            for (int i = 0; i < example.Count; i++)
+            Confirmation();
+        }
+        static void Edit()
+        {
+            var example = compare.GetShipments();
+            Console.Write("\nChoose the order number to Update: ");
+            index = Convert.ToInt16(Console.ReadLine());
+            if (index - 1 >= 0 && index - 1 <= example.Count)
             {
-                Console.WriteLine($"{i + 1}. {example[i].Store} \nProduct for example: {example[i].Product} \n" +
-                    $"Price: P{example[i].Price}    -| {example[i].Quantity} |+\n"); ;
+                Guid selectedId = example[index - 1].ShipmentId;
+                product = example[index - 1].Product;
+                Console.Write("How many pieces would you like to keep? ");
+                quantity = Convert.ToInt16(Console.ReadLine());
+                price = example[index - 1].Price;
+                Shipments edit = new Shipments { ShipmentId = selectedId, Product = product, Quantity = quantity, Price = price };
+                if (quantity == 0)
+                {
+                    bool sample = Remove();
+
+                    while (sample)
+                    {
+                        Confirmation();
+                        break;
+                    }
+                    return;
+                }
+                compare.Update(edit);
+                Console.WriteLine("Successfully updated!");
+                Confirmation();
+            }
+            else
+            {
+                Console.WriteLine("\nPlease choose the order number.");
+                Confirmation();
+                return;
+            }
+            return;
+        }
+        static bool Remove()
+        {
+            var example = compare.GetShipments();
+            Console.Write("\nChoose the order number to Delete: ");
+            index = Convert.ToInt16(Console.ReadLine());
+            if (index - 1 >= 0 && index - 1 <= example.Count)
+            {
+            Guid selectedId = example[index - 1].ShipmentId;
+            Console.Write("Are you sure you want to cancel your order(y/n)? ");
+            given = false;
+            string secondAnswer = Console.ReadLine();
+            switch (secondAnswer)
+            {
+                case "y":
+                        compare.Delete(selectedId);
+                        Confirmation();
+                        given = false;
+                    break;
+                case "n":
+                    given = true;
+                    break;
+                default:
+                    Console.WriteLine("\nPlease answer with 'y' or 'n' only.");
+                    Confirmation();
+                    break;
+            }
+            }
+            else
+            {
+                Console.WriteLine("\nPlease choose the order number.");
+                Confirmation();
+            }
+            return given;
+        }
+        static void Confirmation()
+        {
+            Console.WriteLine("\nOrder confirmation");
+            Console.WriteLine("\nclark | (+63)9876543210 | santolan");
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine("\nE-commerce Store");
+            var order = compare.GetShipments();
+            for (x = 0; x < order.Count; x++)
+            {
+                Console.WriteLine($"{x + 1}. Product : {order[x].Product} \n" +
+                    $"Price: P{order[x].Price}    -| {order[x].Quantity} |+\n");
             }
             Console.WriteLine("Order Summary");
-            Console.WriteLine("Product Subtotal: " + compare.SubTotal());
-            Console.WriteLine($"Shipping Subtotal: {compare.GetShipment().Last().Fee}");
+            if (compare.GetShipments().First().Fee == null)
+            {
+                Console.WriteLine("Product Subtotal: 0");
+                Console.WriteLine("Shipping Subtotal: 0");
+            }
+            else
+            {
+                Console.WriteLine("Product Subtotal: " + compare.SubTotal());
+                Console.WriteLine($"Shipping Subtotal: {compare.GetShipments().First().Fee}");
+            }
             Console.WriteLine($"                  -" + compare.Shipping(fee));
             Console.WriteLine("Total: " + compare.Total(fee));
             Console.Write("Would you like to change anything on your order(y/n)? ");
@@ -44,13 +213,13 @@ namespace shipmentDetails
             switch (input)
             {
                 case 'y':
-                    showOptions();
+                    string[] options = new string[] { "Add order", "Edit quantity", "Cancel order" };
+                    showOptions(options);
                     break;
                 case 'n':
                     Console.WriteLine("\nPayment Method: ");
                     string[] paymentMethod = new string[] { "COD", "Maya", "G-Cash", "Bank account" };
                     showMethods(paymentMethod);
-                    Choices();
                     break;
                 default:
                     Console.WriteLine("()Loading....");
@@ -58,10 +227,18 @@ namespace shipmentDetails
                     break;
             }
         }
-
-        static void Options()
+        static void showOptions(string[] options)
+        {
+            for (x = 0; x < options.Length; x++)
+            {
+                Console.WriteLine($"({x + 1}) {options[x]}");
+            }
+            Options();
+        }
+        static bool Options()
         {
             Console.Write("\nWhat number would you like to do? ");
+            given = false;
             string choice = Console.ReadLine();
             switch (choice)
             {
@@ -69,104 +246,36 @@ namespace shipmentDetails
                     Add();
                     break;
                 case "2":
-                    Update();
+                    Edit();
                     break;
                 case "3":
 
-                    bool sample = Delete();
+                    bool sample = Remove();
 
                     while (sample)
                     {
-                        Orders();
+                        Confirmation();
                         break;
                     }
                     break;
                 default:
-                    Orders();
+                    Console.WriteLine(Options());
                     break;
             }
+            return given;
         }
-
-        static bool Delete()
+        static void showMethods(string[] methods)
         {
-            var example = compare.GetShipment();
-            Guid selectedId = example[0].ShipmentId;
-            Console.Write("Are you sure you want to cancel your order(y/n)? ");
-            bool sample = false;
-            string secondAnswer = Console.ReadLine();
-            switch (secondAnswer)
+            for (x = 0; x < methods.Length; x++)
             {
-                case "y":
-                    compare.Delete(selectedId);
-                    Environment.Exit(0);
-                    sample = false;
-                    break;
-                case "n":
-                    sample = true;
-                    break;
-                default:
-                    Console.WriteLine("\nPlease answer with 'y' or 'n' only.");
-                    Orders();
-                    break;
+                Console.WriteLine($"[{x + 1}] {methods[x]}");
             }
-            return sample;
+            Choices();
         }
-
-        static void Update()
-        {
-            var example = compare.GetShipment();
-            Console.Write("\nChoose a number to Select: ");
-            int index = Convert.ToInt32(Console.ReadLine()) - 1;
-            if (index < 0 || index >= example.Count)
-            {
-                Console.WriteLine("\nPlease choose the order number.");
-                Orders();
-                return;
-            }
-            Guid selectedId = example[index].ShipmentId;
-            Console.Write("How many pieces would you like to keep? ");
-            int subQuantity = Convert.ToInt32(Console.ReadLine());
-            if (subQuantity == 0)
-            {
-                bool sample = Delete();
-
-                while (sample)
-                {
-                    Orders();
-                    break;
-                }
-                return;
-            }
-            compare.Update(selectedId, subQuantity);
-            Console.WriteLine("Successfully updated!");
-            Orders();
-            return;
-        }
-
-        static void Add()
-        {
-            var example = compare.GetShipment();
-            Console.Write("\nChoose a number to Select: ");
-            int index = Convert.ToInt32(Console.ReadLine()) - 1;
-            if (index < 0 || index >= example.Count)
-            {
-                Console.WriteLine("\nPlease choose the order number.");
-                Orders();
-                return;
-            }
-            Guid selectedId = example[index].ShipmentId;
-            Console.Write("How many would you like to add? ");
-            int addQuantity = Convert.ToInt32(Console.ReadLine());
-            compare.Add(selectedId, addQuantity);
-            Console.WriteLine("Successfully added!");
-            Orders();
-            return;
-        }
-
         static bool Choices()
         {
             Console.Write("Please Enter: ");
-            bool given = false;
+            given = false;
             string payment = Console.ReadLine();
             switch (payment)
             {
@@ -190,22 +299,11 @@ namespace shipmentDetails
             Environment.Exit(0);
             return given;
         }
-
-        static void showOptions()
+        static void showItems(string[] items)
         {
-            string[] options = new string[] { "Add quantity", "Edit quantity", "Cancel order" };
-            for (int x = 0; x < options.Length; x++)
+            for (x = 0; x < items.Length; x++)
             {
-                Console.WriteLine($"[{x + 1}] {options[x]}");
-            }
-            Options();
-        }
-
-        static void showMethods(string[] methods)
-        {
-            for (int x = 0; x < methods.Length; x++)
-            {
-                Console.WriteLine($"[{x + 1}] {methods[x]}");
+                Console.WriteLine($"{x + 1}. {items[x]}");
             }
         }
     }

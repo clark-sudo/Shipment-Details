@@ -1,4 +1,8 @@
 ﻿using shipmentModel;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
 
@@ -6,52 +10,57 @@ namespace shipmentData
 {
     public class savedDataInMemory : iShipmentData
     {
-        public List<Shipment> data1 = new List<Shipment>();
+        public List<Shipments> data1 = new List<Shipments>();
+
         public savedDataInMemory()
         {
-            Shipment shipment = new Shipment
+            Shipments shipments = new Shipments
             {
                 ShipmentId = Guid.NewGuid(),
-                Buyer = "clark",
-                Number = "987 654 3210",
-                Address = "santolan",
-                Store = "E-commerce Store",
-                Product = "Apple",
-                Price = 99999999,
+                //Buyer = "clark",
+                //Number = "987 654 3210",
+                //Address = "santolan",
+                //Store = "E-commerce Store",
+                Product = "Blueberry",
+                Price = 19999,
                 Quantity = 9,
                 Fee = 30
             };
-            data1.Add(shipment);
+            data1.Add(shipments);
         }
-        public void Add(Shipment shipment)
+        public void Add(Shipments shipments)
         {
-            data1.Add(shipment);
+            data1.Add(shipments);
         }
-        public Shipment? GetById(Guid id)
+        public Shipments? GetById(Guid id)
         {
             return data1.FirstOrDefault(a => a.ShipmentId == id);
         }
-        public Shipment? GetByBuyer(string buyer)
+        public Shipments? GetByProduct(string product)
         {
-            return data1.FirstOrDefault(a => a.Buyer == buyer);
+            return data1.FirstOrDefault(a => a.Product == product);
         }
-        public bool BuyerExists(string buyer)
-        {
-            return data1.Any(a => a.Buyer == buyer);
-        }
-        public void Update(Shipment shipment)
+        public void Edit(Shipments shipment)
         {
 
-            var existingInfo = data1.FirstOrDefault(x => x.ShipmentId == shipment.ShipmentId);
+            var existingOrders = GetById(shipment.ShipmentId);
 
-            if (existingInfo != null)
+            if (existingOrders != null)
             {
-                existingInfo.Buyer = shipment.Buyer;
-                existingInfo.Number = shipment.Number;
-                existingInfo.Address = shipment.Address;
+                existingOrders.Product = shipment.Product;
+                existingOrders.Price = shipment.Price;
+                existingOrders.Quantity = shipment.Quantity;
             }
         }
-        public List<Shipment> GetShipment()
+        public void Remove(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+        public bool ProductExists(string product)
+        {
+            return data1.Any(a => a.Product == product);
+        }
+        public List<Shipments> GetShipments()
         {
             return data1;
         }

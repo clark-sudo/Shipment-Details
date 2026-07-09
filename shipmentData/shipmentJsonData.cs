@@ -8,7 +8,8 @@ namespace shipmentData
 {
     public class shipmentJsonData : iShipmentData
     {
-        private List<Shipment> data1 = new List<Shipment>();
+        private List<Shipments> data1 = new List<Shipments>();
+        //private List<Shipments> data2 = new List<Shipments>();
 
         private string JsonFileName;
         public shipmentJsonData()
@@ -23,13 +24,13 @@ namespace shipmentData
 
             if (data1.Count <= 0)
             {
-                data1.Add(new Shipment
+                data1.Add(new Shipments
                 {
                     ShipmentId = Guid.NewGuid(),
-                    Buyer = "clark",
-                    Number = "987 654 3210",
-                    Address = "santolan",
-                    Store = "E-commerce Store",
+                    //Buyer = "clark",
+                    //Number = "987 654 3210",
+                    //Address = "santolan",
+                    //Store = "E-commerce Store",
                     Product = "Apple",
                     Price = 99999999,
                     Quantity = 9,
@@ -42,7 +43,7 @@ namespace shipmentData
         {
             using (var outputStream = File.OpenWrite(JsonFileName))
             {
-                JsonSerializer.Serialize<List<Shipment>>(
+                JsonSerializer.Serialize<List<Shipments>>(
                     new Utf8JsonWriter(outputStream, new JsonWriterOptions
                     { SkipValidation = true, Indented = true }), data1);
             }
@@ -51,36 +52,36 @@ namespace shipmentData
         {
             using (var jsonFileReader = File.OpenText(this.JsonFileName))
             {
-                this.data1 = JsonSerializer.Deserialize<List<Shipment>>
+                this.data1 = JsonSerializer.Deserialize<List<Shipments>>
                     (jsonFileReader.ReadToEnd(), new JsonSerializerOptions
                     { PropertyNameCaseInsensitive = true }).ToList();
             }
         }
-        public void Add(Shipment shipment)
+        public void Add(Shipments shipment)
         {
             //throw new NotImplementedException();
             data1.Add(shipment);
             SaveDataToJsonFile();
         }
-        public List<Shipment> GetShipment()
+        public List<Shipments> GetShipments()
         {
             //throw new NotImplementedException();
             RetrieveDataFromJsonFile();
             return data1;
         }
-        public Shipment? GetById(Guid id)
+        public Shipments? GetById(Guid id)
         {
             //throw new NotImplementedException();
             RetrieveDataFromJsonFile();
             return data1.Where(x => x.ShipmentId == id).FirstOrDefault();
         }
-        public Shipment? GetByBuyer(string buyer)
+        public Shipments? GetByProduct(string product)
         {
             //throw new NotImplementedException();
             RetrieveDataFromJsonFile();
-            return data1.Where(x => x.Buyer == buyer).FirstOrDefault();
+            return data1.Where(x => x.Product == product).FirstOrDefault();
         }
-        public void Update(Shipment shipment)
+        public void Edit(Shipments shipment)
         {
             //throw new NotImplementedException();
             RetrieveDataFromJsonFile();
@@ -88,21 +89,27 @@ namespace shipmentData
             var existingShipment = data1.FirstOrDefault(x => x.ShipmentId == shipment.ShipmentId);
             if (existingShipment != null)
             {
-                existingShipment.Buyer =
-                shipment.Buyer;
-                existingShipment.Number =
-                shipment.Number;
-                existingShipment.Address =
-                shipment.Address;
+                existingShipment.Quantity =
+                shipment.Quantity;
+                //existingShipment.Number =
+                //shipment.Number;
+                //existingShipment.Address =
+                //shipment.Address;
             }
 
             SaveDataToJsonFile();
         }
-        public bool BuyerExists(string buyer)
+        public void Remove(Guid id)
+        {
+            throw new NotImplementedException();
+            //data1.Remove(shipment);
+            //SaveDataToJsonFile();
+        }
+        public bool ProductExists(string product)
         {
             //throw new NotImplementedException();
             RetrieveDataFromJsonFile();
-            return data1.Where(x => x.Buyer == buyer).Any();
+            return data1.Where(x => x.Product == product).Any();
         }
     }
 }

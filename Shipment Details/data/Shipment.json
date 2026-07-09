@@ -1,0 +1,13 @@
+[
+  {
+    "ShipmentId": "ce8b2a1c-3f1f-44cf-bd86-e50a84e4a5ab",
+    "Buyer": "clark",
+    "Number": "987 654 3210",
+    "Address": "santolan",
+    "Store": "E-commerce Store",
+    "Product": "Apple",
+    "Price": 99999999,
+    "Quantity": 3,
+    "Fee": 30
+  }
+]

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Shipment_Details</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -12,6 +12,10 @@
     <ProjectReference Include="..\shipmentBusiness\shipmentBusiness.csproj" />
     <ProjectReference Include="..\shipmentData\shipmentData.csproj" />
     <ProjectReference Include="..\shipmentModel\shipmentModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="data\" />
   </ItemGroup>
 
 </Project>
